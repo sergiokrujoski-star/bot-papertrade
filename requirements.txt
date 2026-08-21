@@ -1,8 +1,7 @@
-setuptools
 flask
 gunicorn
 pandas
 ccxt
-pandas-ta-quant
 python-dotenv
 requests
+pandas_ta
