@@ -1,13 +1,22 @@
 import os
 import time
 import json
+import threading
 from datetime import datetime, timezone
 import pandas as pd
 import ccxt
 import requests
 from dotenv import load_dotenv
+from flask import Flask
 
 load_dotenv()
+
+# --- CONFIGURACIÓN DE FLASK (Para Render y Cron-Job) ---
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot de Papertrading activo y funcionando.", 200
 
 # --- CONFIGURACIÓN DE ESTRATEGIA Y PAPERTRADING ---
 SYMBOL = "ETH/USDT"
@@ -228,4 +237,11 @@ def run_papertrading():
             time.sleep(10)
 
 if __name__ == "__main__":
-    run_papertrading()
+    # Iniciar la estrategia en un hilo secundario
+    t = threading.Thread(target=run_papertrading)
+    t.daemon = True
+    t.start()
+
+    # Iniciar el servidor Web Flask en el hilo principal
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
