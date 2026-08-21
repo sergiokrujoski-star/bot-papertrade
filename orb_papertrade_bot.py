@@ -11,7 +11,7 @@ from flask import Flask
 
 load_dotenv()
 
-# --- CONFIGURACIÓN DE FLASK (Para Render y Cron-Job) ---
+# --- CONFIGURACIÓN DE FLASK ---
 app = Flask(__name__)
 
 @app.route('/')
@@ -236,12 +236,10 @@ def run_papertrading():
             print(f"Error en ejecución: {e}")
             time.sleep(10)
 
-if __name__ == "__main__":
-    # Iniciar la estrategia en un hilo secundario
-    t = threading.Thread(target=run_papertrading)
-    t.daemon = True
-    t.start()
+# --- INICIALIZACIÓN AUTOMÁTICA DE HILOS ---
+bot_thread = threading.Thread(target=run_papertrading, daemon=True)
+bot_thread.start()
 
-    # Iniciar el servidor Web Flask en el hilo principal
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
